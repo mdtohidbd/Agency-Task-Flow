@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profile Options</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "warning": "#D98C2B",
+                    "surface-variant": "#e5e2e1",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#F5F4F1",
+                    "primary-container": "#2f5edb",
+                    "on-surface": "#1c1b1b",
+                    "outline": "#E3E1DB",
+                    "surface-container-high": "#eae7e7",
+                    "surface-dim": "#dcd9d9",
+                    "tertiary-container": "#b04700",
+                    "on-secondary-container": "#636360",
+                    "danger": "#C94F4F",
+                    "background": "#FFFFFF",
+                    "on-background": "#1c1b1b",
+                    "on-primary-fixed": "#00164d",
+                    "on-tertiary-container": "#ffe1d5",
+                    "secondary-container": "#e1dfdc",
+                    "primary": "#0044c1",
+                    "secondary-fixed-dim": "#c7c6c3",
+                    "on-primary": "#ffffff",
+                    "secondary": "#5e5e5c",
+                    "inverse-on-surface": "#f3f0ef",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#e4e2de",
+                    "inverse-primary": "#b5c4ff",
+                    "surface-container-highest": "#e5e2e1",
+                    "tertiary-fixed-dim": "#ffb694",
+                    "primary-fixed-dim": "#b5c4ff",
+                    "on-primary-fixed-variant": "#003cad",
+                    "on-primary-container": "#e2e6ff",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#2154d1",
+                    "surface-container-low": "#f6f3f2",
+                    "outline-variant": "#c3c5d6",
+                    "success": "#3E9C5B",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#7b2f00",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed-variant": "#464744",
+                    "outline-strong": "#C9C7BF",
+                    "surface": "#fcf9f8",
+                    "on-surface-variant": "#434654",
+                    "inverse-surface": "#313030",
+                    "on-secondary-fixed": "#1b1c1a",
+                    "tertiary-fixed": "#ffdbcc",
+                    "ink-blue-container": "#EAEEFC",
+                    "tertiary": "#893600",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#351000",
+                    "primary-fixed": "#dce1ff",
+                    "surface-bright": "#fcf9f8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "unit": "4px",
+                    "xl": "32px",
+                    "margin-desktop": "32px",
+                    "lg": "24px",
+                    "margin-mobile": "20px",
+                    "md": "16px",
+                    "gutter": "1px"
+            },
+            "fontFamily": {
+                    "headline-md": [
+                            "Patrick Hand"
+                    ],
+                    "label-sm": [
+                            "Patrick Hand"
+                    ],
+                    "headline-lg": [
+                            "Patrick Hand"
+                    ],
+                    "body-md": [
+                            "Patrick Hand"
+                    ],
+                    "body-lg": [
+                            "Patrick Hand"
+                    ]
+            },
+            "fontSize": {
+                    "headline-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "26px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg": [
+                            "26px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Custom scrollbar for notepad feel */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E3E1DB;
+            border-radius: 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md h-screen w-full overflow-hidden flex justify-center bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIgZmlsbD0iI0UzRTFEQiIvPjwvc3ZnPg==')] bg-repeat">
+<!-- Dimmed Background Context (My Tasks) -->
+<div aria-hidden="true" class="absolute inset-0 bg-on-background/30 z-10"></div>
+<!-- Drawer Overlay -->
+<div class="absolute inset-y-0 right-0 w-full sm:w-96 bg-background shadow-[-8px_0_24px_rgba(0,0,0,0.06)] z-20 flex flex-col h-full transform transition-transform duration-300 translate-x-0" id="drawer">
+<!-- Header -->
+<header class="flex items-center px-margin-mobile h-16 border-b border-outline shrink-0">
+<button aria-label="Go back" class="text-on-background hover:text-primary transition-colors p-sm mr-sm">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-on-background tracking-tight">Profile Options</h1>
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto px-margin-mobile py-lg flex flex-col gap-xl">
+<!-- Update Avatar -->
+<section class="flex flex-col items-center gap-sm">
+<div class="relative">
+<div class="w-24 h-24 rounded-full border border-outline flex items-center justify-center bg-surface-container text-primary font-headline-lg text-headline-lg">
+                        M
+                    </div>
+<button aria-label="Upload new avatar" class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center border-2 border-background">
+<span class="material-symbols-outlined text-[16px]" data-icon="add">add</span>
+</button>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">Update Avatar</span>
+</section>
+<div class="border-t border-outline"></div>
+<!-- Form Fields -->
+<div class="flex flex-col gap-lg">
+<!-- Edit Name Input -->
+<div class="flex flex-col gap-unit relative">
+<label class="font-label-sm text-label-sm text-[#6E6E6B] absolute -top-3 left-0 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-body-md peer-placeholder-shown:text-secondary peer-focus:-top-3 peer-focus:text-label-sm peer-focus:text-primary" for="edit-name">Edit Name</label>
+<input class="peer w-full bg-transparent border-0 border-b border-outline px-0 py-sm focus:ring-0 focus:border-primary font-body-lg text-body-lg text-on-background placeholder-transparent" id="edit-name" placeholder="Edit Name" type="text" value="Michael Doe"/>
+</div>
+<!-- Change Role Input (Underline style as requested) -->
+<div class="flex flex-col gap-unit relative mt-md">
+<label class="font-label-sm text-label-sm text-[#6E6E6B] absolute -top-3 left-0 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-body-md peer-placeholder-shown:text-secondary peer-focus:-top-3 peer-focus:text-label-sm peer-focus:text-primary" for="change-role">Change Role</label>
+<input class="peer w-full bg-transparent border-0 border-b border-outline px-0 py-sm focus:ring-0 focus:border-primary font-body-lg text-body-lg text-on-background placeholder-transparent" id="change-role" placeholder="Change Role" type="text" value="Lead Designer"/>
+</div>
+</div>
+<!-- List Items -->
+<div class="flex flex-col">
+<a class="flex justify-between items-center py-md border-b border-outline group hover:bg-surface-container transition-colors" href="#">
+<span class="font-body-lg text-body-lg text-on-background group-hover:text-primary transition-colors">Privacy Settings</span>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</a>
+<a class="flex justify-between items-center py-md border-b border-outline group hover:bg-surface-container transition-colors" href="#">
+<span class="font-body-lg text-body-lg text-on-background group-hover:text-primary transition-colors">Notification Preferences</span>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+</main>
+<!-- Footer -->
+<footer class="p-margin-mobile border-t border-outline bg-background shrink-0 pb-safe">
+<button class="w-full bg-primary text-on-primary font-body-lg text-body-lg py-md rounded-full text-center hover:bg-on-primary-fixed-variant transition-colors active:scale-[0.98]">
+                Save Changes
+            </button>
+</footer>
+</div>
+</body></html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-surface" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Projects</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#313030",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#b04700",
+                    "on-secondary-fixed-variant": "#464744",
+                    "surface-dim": "#dcd9d9",
+                    "ink-blue-container": "#EAEEFC",
+                    "inverse-on-surface": "#f3f0ef",
+                    "surface-variant": "#e5e2e1",
+                    "on-secondary-fixed": "#1b1c1a",
+                    "on-primary-fixed-variant": "#003cad",
+                    "on-surface": "#1c1b1b",
+                    "surface": "#fcf9f8",
+                    "success": "#3E9C5B",
+                    "on-error": "#ffffff",
+                    "tertiary": "#893600",
+                    "outline": "#E3E1DB",
+                    "surface-container": "#F5F4F1",
+                    "on-secondary": "#ffffff",
+                    "surface-container-highest": "#e5e2e1",
+                    "on-primary-fixed": "#00164d",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#dce1ff",
+                    "secondary": "#5e5e5c",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#e2e6ff",
+                    "outline-strong": "#C9C7BF",
+                    "tertiary-fixed": "#ffdbcc",
+                    "secondary-container": "#e1dfdc",
+                    "surface-bright": "#fcf9f8",
+                    "on-surface-variant": "#434654",
+                    "on-secondary-container": "#636360",
+                    "primary-fixed-dim": "#b5c4ff",
+                    "secondary-fixed": "#e4e2de",
+                    "danger": "#C94F4F",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#c7c6c3",
+                    "on-tertiary-container": "#ffe1d5",
+                    "tertiary-fixed-dim": "#ffb694",
+                    "on-background": "#1c1b1b",
+                    "inverse-primary": "#b5c4ff",
+                    "primary-container": "#2f5edb",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#eae7e7",
+                    "outline-variant": "#c3c5d6",
+                    "primary": "#0044c1",
+                    "on-tertiary-fixed": "#351000",
+                    "surface-container-low": "#f6f3f2",
+                    "warning": "#D98C2B",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#7b2f00",
+                    "surface-tint": "#2154d1",
+                    "background": "#FFFFFF"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "unit": "4px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "gutter": "1px",
+                    "sm": "8px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "32px"
+            },
+            "fontFamily": {
+                    "body-lg": [
+                            "Patrick Hand"
+                    ],
+                    "body-md": [
+                            "Patrick Hand"
+                    ],
+                    "label-sm": [
+                            "Patrick Hand"
+                    ],
+                    "headline-lg": [
+                            "Patrick Hand"
+                    ],
+                    "headline-md": [
+                            "Patrick Hand"
+                    ]
+            },
+            "fontSize": {
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg": [
+                            "26px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "26px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+        },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+        
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="h-full bg-surface text-on-surface font-body-lg text-body-lg antialiased overflow-hidden flex justify-center">
+<div class="w-full max-w-[600px] h-full flex flex-col relative bg-surface shadow-sm">
+<!-- TopAppBar (From JSON) -->
+<header class="docked full-width top-0 border-b border-outline dark:border-outline-strong flat no shadows flex justify-between items-center w-full px-margin-mobile h-16 bg-surface dark:bg-surface-dim z-40 transition-colors duration-200">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-ink-blue-container text-primary flex items-center justify-center font-headline-md text-headline-md">
+                    M
+                </div>
+<h1 class="font-headline-md text-headline-md text-primary dark:text-inverse-primary">Projects</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center text-primary dark:text-inverse-primary hover:bg-surface-variant dark:hover:bg-on-surface-variant rounded-full transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+</header>
+<!-- Main Content Canvas (Projects List) -->
+<main class="flex-1 overflow-y-auto no-scrollbar pb-24 pt-md px-margin-mobile" id="main-view">
+<div class="flex flex-col gap-lg">
+<!-- Project Card 1 -->
+<button class="w-full text-left flex flex-col gap-sm py-md border-b border-outline hover:bg-surface-variant transition-colors duration-200 group" onclick="toggleDetailView(true)">
+<div class="flex justify-between items-start w-full">
+<h2 class="font-headline-lg text-headline-lg text-on-surface group-hover:text-primary transition-colors">Q3 Marketing Campaign</h2>
+<span class="font-label-sm text-label-sm text-secondary">Due Oct 15</span>
+</div>
+<div class="flex justify-between items-center w-full mt-sm">
+<!-- Tiny Avatars -->
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant border border-surface flex items-center justify-center font-label-sm text-label-sm text-secondary">A</div>
+<div class="w-6 h-6 rounded-full bg-surface-variant border border-surface flex items-center justify-center font-label-sm text-label-sm text-secondary">J</div>
+<div class="w-6 h-6 rounded-full bg-ink-blue-container border border-surface flex items-center justify-center font-label-sm text-label-sm text-primary">S</div>
+</div>
+<div class="flex items-center gap-sm w-1/2">
+<span class="font-label-sm text-label-sm text-secondary">65%</span>
+<div class="h-1 flex-1 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[65%]"></div>
+</div>
+</div>
+</div>
+</button>
+<!-- Project Card 2 -->
+<button class="w-full text-left flex flex-col gap-sm py-md border-b border-outline hover:bg-surface-variant transition-colors duration-200 group" onclick="toggleDetailView(true)">
+<div class="flex justify-between items-start w-full">
+<h2 class="font-headline-lg text-headline-lg text-on-surface group-hover:text-primary transition-colors">Website Redesign</h2>
+<span class="font-label-sm text-label-sm text-secondary">Due Nov 1</span>
+</div>
+<div class="flex justify-between items-center w-full mt-sm">
+<!-- Tiny Avatars -->
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant border border-surface flex items-center justify-center font-label-sm text-label-sm text-secondary">M</div>
+<div class="w-6 h-6 rounded-full bg-surface-variant border border-surface flex items-center justify-center font-label-sm text-label-sm text-secondary">L</div>
+</div>
+<div class="flex items-center gap-sm w-1/2">
+<span class="font-label-sm text-label-sm text-secondary">30%</span>
+<div class="h-1 flex-1 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[30%]"></div>
+</div>
+</div>
+</div>
+</button>
+<!-- Project Card 3 -->
+<button class="w-full text-left flex flex-col gap-sm py-md border-b border-outline hover:bg-surface-variant transition-colors duration-200 group" onclick="toggleDetailView(true)">
+<div class="flex justify-between items-start w-full">
+<h2 class="font-headline-lg text-headline-lg text-on-surface group-hover:text-primary transition-colors">Client Onboarding Updates</h2>
+<span class="font-label-sm text-label-sm text-secondary">Due Dec 10</span>
+</div>
+<div class="flex justify-between items-center w-full mt-sm">
+<!-- Tiny Avatars -->
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-ink-blue-container border border-surface flex items-center justify-center font-label-sm text-label-sm text-primary">S</div>
+</div>
+<div class="flex items-center gap-sm w-1/2">
+<span class="font-label-sm text-label-sm text-secondary">90%</span>
+<div class="h-1 flex-1 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[90%]"></div>
+</div>
+</div>
+</div>
+</button>
+</div>
+</main>
+<!-- BottomNavBar (From JSON) -->
+<!-- Active tab is "Projects" based on context -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center py-2 px-margin-mobile border-t border-outline dark:border-outline-strong flat no shadows bg-surface-container dark:bg-inverse-surface z-50 md:hidden max-w-[600px] mx-auto right-0">
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-variant dark:hover:bg-on-surface-variant scale-95 active:scale-90 transition-transform duration-200 rounded-full" href="#">
+<span class="material-symbols-outlined" data-icon="task_alt">task_alt</span>
+<span class="font-label-sm text-label-sm mt-1">My Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-variant dark:hover:bg-on-surface-variant scale-95 active:scale-90 transition-transform duration-200 rounded-full" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-sm text-label-sm mt-1">Team Board</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-ink-blue-container dark:bg-primary-container text-primary dark:text-on-primary-container rounded-full px-4 py-1 hover:bg-surface-variant dark:hover:bg-on-surface-variant scale-95 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="folder" data-weight="fill" style="font-variation-settings: 'FILL' 1;">folder</span>
+<span class="font-label-sm text-label-sm mt-1">Projects</span>
+</a>
+</nav>
+<!-- Detail View Overlay -->
+<div class="absolute inset-0 bg-surface z-50 flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out" id="detail-view">
+<header class="flex justify-between items-center w-full px-margin-mobile h-16 border-b border-outline bg-surface">
+<button class="w-10 h-10 flex items-center justify-center text-secondary hover:bg-surface-variant rounded-full" onclick="toggleDetailView(false)">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex items-center gap-sm">
+<button class="w-10 h-10 flex items-center justify-center text-secondary hover:bg-surface-variant rounded-full">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-secondary hover:bg-surface-variant rounded-full">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto no-scrollbar px-margin-mobile py-md">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-sm">Q3 Marketing Campaign</h1>
+<div class="flex items-center gap-md mb-lg">
+<span class="font-label-sm text-label-sm text-secondary bg-surface-variant px-2 py-1 rounded-full border border-outline">Marketing</span>
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span> Oct 15</span>
+</div>
+<!-- Resources Section -->
+<section class="mb-xl">
+<h3 class="font-headline-md text-headline-md text-on-surface border-b border-outline pb-sm mb-md flex items-center justify-between">
+                        Resources
+                        <button class="text-primary hover:bg-surface-variant p-1 rounded-full"><span class="material-symbols-outlined" data-icon="add">add</span></button>
+</h3>
+<div class="flex flex-col gap-sm">
+<div class="flex items-center gap-sm py-2 group cursor-text">
+<span class="material-symbols-outlined text-secondary" data-icon="link">link</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-body-lg text-primary flex-1 underline decoration-outline underline-offset-4" readonly="" type="text" value="Figma Design Files"/>
+</div>
+<div class="flex items-center gap-sm py-2 group cursor-text">
+<span class="material-symbols-outlined text-secondary" data-icon="description">description</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-body-lg text-primary flex-1 underline decoration-outline underline-offset-4" readonly="" type="text" value="Campaign Brief (Google Docs)"/>
+</div>
+<div class="flex items-start gap-sm py-2 group cursor-text mt-sm">
+<span class="material-symbols-outlined text-secondary mt-1" data-icon="notes">notes</span>
+<textarea class="bg-transparent border-none p-0 focus:ring-0 text-body-lg text-secondary flex-1 resize-none h-24" readonly="">Target audience focus on small business owners. Ensure messaging aligns with new product feature rollout in early Q4.</textarea>
+</div>
+</div>
+</section>
+<!-- Tasks Section -->
+<section class="mb-xl">
+<h3 class="font-headline-md text-headline-md text-on-surface border-b border-outline pb-sm mb-md flex items-center justify-between">
+                        Tasks
+                        <button class="text-primary hover:bg-surface-variant p-1 rounded-full"><span class="material-symbols-outlined" data-icon="add">add</span></button>
+</h3>
+<div class="flex flex-col">
+<!-- Task 1 -->
+<div class="flex items-start gap-md py-md border-b border-outline group relative pl-3">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-3/4 bg-primary rounded-full"></div>
+<div class="mt-1 relative flex items-center justify-center">
+<input checked="" class="w-5 h-5 rounded-[4px] border-outline text-primary focus:ring-0 cursor-pointer appearance-none checked:bg-transparent checked:border-primary peer" type="checkbox"/>
+<span class="material-symbols-outlined absolute text-primary opacity-0 peer-checked:opacity-100 pointer-events-none" data-icon="close" style="font-size: 18px;">close</span> <!-- hand drawn look for check -->
+</div>
+<div class="flex-1">
+<p class="text-body-lg text-secondary line-through">Finalize ad copy for social channels</p>
+<div class="flex items-center gap-sm mt-1">
+<div class="w-5 h-5 rounded-full bg-surface-variant flex items-center justify-center font-label-sm text-label-sm text-secondary">A</div>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-secondary hover:text-danger p-1" onclick="toggleDeleteModal(true)"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
+</div>
+<!-- Task 2 -->
+<div class="flex items-start gap-md py-md border-b border-outline group relative pl-3">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-3/4 bg-warning rounded-full"></div>
+<div class="mt-1 relative flex items-center justify-center">
+<input class="w-5 h-5 rounded-[4px] border-outline text-primary focus:ring-0 cursor-pointer appearance-none checked:bg-transparent checked:border-primary peer" type="checkbox"/>
+<span class="material-symbols-outlined absolute text-primary opacity-0 peer-checked:opacity-100 pointer-events-none" data-icon="close" style="font-size: 18px;">close</span>
+</div>
+<div class="flex-1">
+<p class="text-body-lg text-on-surface">Review staging environment for landing page</p>
+<div class="flex items-center gap-sm mt-1">
+<div class="w-5 h-5 rounded-full bg-surface-variant flex items-center justify-center font-label-sm text-label-sm text-secondary">M</div>
+<span class="font-label-sm text-label-sm text-warning">Due Tomorrow</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-secondary hover:text-danger p-1" onclick="toggleDeleteModal(true)"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
+</div>
+<!-- Task 3 -->
+<div class="flex items-start gap-md py-md border-b border-outline group relative pl-3">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-3/4 bg-outline rounded-full"></div>
+<div class="mt-1 relative flex items-center justify-center">
+<input class="w-5 h-5 rounded-[4px] border-outline text-primary focus:ring-0 cursor-pointer appearance-none checked:bg-transparent checked:border-primary peer" type="checkbox"/>
+<span class="material-symbols-outlined absolute text-primary opacity-0 peer-checked:opacity-100 pointer-events-none" data-icon="close" style="font-size: 18px;">close</span>
+</div>
+<div class="flex-1">
+<p class="text-body-lg text-on-surface">Schedule kickoff meeting with external agency</p>
+<div class="flex items-center gap-sm mt-1">
+<span class="font-label-sm text-label-sm text-secondary">Unassigned</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-secondary hover:text-danger p-1" onclick="toggleDeleteModal(true)"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Delete Task Modal Overlay -->
+<div class="absolute inset-0 z-[60] hidden flex items-center justify-center bg-inverse-surface/40 px-margin-mobile" id="delete-modal">
+<div class="bg-surface rounded-lg w-full max-w-sm p-lg shadow-[0_2px_8px_rgba(0,0,0,0.06)] transform transition-transform scale-95 opacity-0" id="delete-modal-content">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm">Remove this task?</h3>
+<p class="font-body-md text-body-md text-secondary mb-lg">This cannot be undone.</p>
+<div class="flex justify-end gap-md pt-sm border-t border-outline">
+<button class="font-body-lg text-body-lg text-secondary px-4 py-2 hover:bg-surface-variant rounded-full transition-colors" onclick="toggleDeleteModal(false)">Cancel</button>
+<button class="font-body-lg text-body-lg text-primary px-4 py-2 hover:bg-ink-blue-container rounded-full transition-colors" onclick="toggleDeleteModal(false)">Delete</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+        function toggleDetailView(show) {
+            const detailView = document.getElementById('detail-view');
+            if (show) {
+                detailView.classList.remove('translate-x-full');
+            } else {
+                detailView.classList.add('translate-x-full');
+            }
+        }
+
+        function toggleDeleteModal(show) {
+            const modal = document.getElementById('delete-modal');
+            const modalContent = document.getElementById('delete-modal-content');
+            
+            if (show) {
+                modal.classList.remove('hidden');
+                // trigger reflow
+                void modal.offsetWidth;
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            } else {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 200); // match transition duration roughly
+            }
+        }
+    </script>
+</body></html>

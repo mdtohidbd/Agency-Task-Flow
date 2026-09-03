@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-page: #fcf9f8;
+    --paper-surface: #ffffff;
+    --surface-dim: #fafaf8;
+    --surface-container: #f5f4f1;
+    --surface-container-high: #eae7e7;
+    --text-primary: #1c1b1b;
+    --text-secondary: #5e5e5c;
+    --outline-rule: #e3e1db;
+    --outline-strong: #c9c7bf;
+    --primary-accent: #0044c1;
+    --primary-container: #eaeefc;
+    --dot-pattern-color: #e3e1db;
+  }
+
+  html.dark {
+    --bg-page: #161616;
+    --paper-surface: #1e1e1e;
+    --surface-dim: #252525;
+    --surface-container: #2a2a2a;
+    --surface-container-high: #333333;
+    --text-primary: #fcf9f8;
+    --text-secondary: #a3a3a0;
+    --outline-rule: #3a3835;
+    --outline-strong: #54524e;
+    --primary-accent: #b5c4ff;
+    --primary-container: #2f5edb;
+    --dot-pattern-color: #2f2e2b;
+  }
+
+  html.sepia {
+    --bg-page: #fcf7e8;
+    --paper-surface: #f7f0dc;
+    --surface-dim: #efe6cc;
+    --surface-container: #e6dbbd;
+    --surface-container-high: #dbcea7;
+    --text-primary: #382f25;
+    --text-secondary: #756858;
+    --outline-rule: #dcd0b0;
+    --outline-strong: #c4b693;
+    --primary-accent: #893600;
+    --primary-container: #ffe1d5;
+    --dot-pattern-color: #dcd0b0;
+  }
+
+  body {
+    font-family: 'Patrick Hand', cursive, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+}
+
+/* Subtle Notebook Dot Grid Canvas */
+.notepad-canvas-bg {
+  background-color: var(--paper-surface);
+  background-image: radial-gradient(var(--dot-pattern-color) 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+}
+
+/* Notepad Ruled Horizontal Lines */
+.notepad-ruled-bg {
+  background-color: var(--paper-surface);
+  background-image: linear-gradient(var(--outline-rule) 1px, transparent 1px);
+  background-size: 100% 32px;
+}
+
+/* Hairlines for clean notepad feel */
+.hairline-b {
+  border-bottom: 1px solid var(--outline-rule, #e3e1db);
+}
+
+.hairline-t {
+  border-top: 1px solid var(--outline-rule, #e3e1db);
+}
+
+.hairline-l {
+  border-left: 1px solid var(--outline-rule, #e3e1db);
+}
+
+.hairline-r {
+  border-right: 1px solid var(--outline-rule, #e3e1db);
+}
+
+/* Priority ink stroke indicators with soft rounded pill */
+.ink-stroke-high {
+  width: 3.5px;
+  background-color: #c94f4f;
+  border-radius: 9999px;
+}
+
+.ink-stroke-normal {
+  width: 3.5px;
+  background-color: #d98c2b;
+  border-radius: 9999px;
+}
+
+.ink-stroke-low {
+  width: 3.5px;
+  background-color: #0044c1;
+  border-radius: 9999px;
+}
+
+.ink-stroke-done {
+  width: 3.5px;
+  background-color: #c9c7bf;
+  border-radius: 9999px;
+}
+
+/* Google Material Symbols */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-outlined[data-weight="fill"],
+.material-symbols-fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Custom Minimal Notepad Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--outline-rule, #e3e1db);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--outline-strong, #c9c7bf);
+}
+
+/* Utility to hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Keyframe animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.15);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Tactile button bounce */
+.btn-tactile {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-tactile:active {
+  transform: scale(0.96);
+}
