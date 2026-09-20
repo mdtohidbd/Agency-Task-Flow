@@ -14,6 +14,17 @@ export const AddTeammateModal: React.FC<AddTeammateModalProps> = ({ isOpen, onCl
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Close on Escape
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,9 +47,12 @@ export const AddTeammateModal: React.FC<AddTeammateModalProps> = ({ isOpen, onCl
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/20 dark:bg-black/50 px-margin-mobile backdrop-blur-[1px]">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/25 dark:bg-black/50 px-4 backdrop-blur-[2px]"
+      onClick={onClose}
+    >
       <div
-        className="bg-surface dark:bg-surface-dim border border-outline rounded-lg w-full max-w-sm p-lg shadow-minimal-lift"
+        className="bg-surface dark:bg-surface-dim border border-outline rounded-2xl w-full max-w-sm sm:max-w-md p-lg shadow-2xl animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-md pb-2 border-b border-outline">

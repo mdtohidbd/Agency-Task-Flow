@@ -94,12 +94,21 @@ export const taskController = {
     const data = parseResult.data;
 
     // Lookup assignee info if provided
+    let assigneeId = data.assigneeId;
     let assigneeName = data.assigneeName;
     let assigneeAvatar = data.assigneeAvatar;
-    if (data.assigneeId && (!assigneeName || !assigneeAvatar)) {
-      const user = await db.getUserById(data.assigneeId);
+
+    if (assigneeId) {
+      const user = await db.getUserById(assigneeId);
       if (user) {
         assigneeName = user.name;
+        assigneeAvatar = user.avatar;
+      }
+    } else if (assigneeName && assigneeName !== 'Unassigned') {
+      const users = await db.getUsers();
+      const user = users.find(u => u.name.toLowerCase() === assigneeName?.toLowerCase());
+      if (user) {
+        assigneeId = user.id;
         assigneeAvatar = user.avatar;
       }
     }
@@ -123,7 +132,7 @@ export const taskController = {
       dueDisplay: data.dueDisplay || (data.dueDate ? data.dueDate : undefined),
       projectId: data.projectId,
       projectName: projectName || 'General',
-      assigneeId: data.assigneeId,
+      assigneeId: assigneeId,
       assigneeName: assigneeName || 'Unassigned',
       assigneeAvatar: assigneeAvatar || '?',
       creatorId: (req as Request & { user?: { id: string } }).user?.id || 'user-mahim'
@@ -155,6 +164,13 @@ export const taskController = {
       const user = await db.getUserById(data.assigneeId);
       if (user) {
         data.assigneeName = user.name;
+        data.assigneeAvatar = user.avatar;
+      }
+    } else if (data.assigneeName && data.assigneeName !== 'Unassigned') {
+      const users = await db.getUsers();
+      const user = users.find(u => u.name.toLowerCase() === data.assigneeName?.toLowerCase());
+      if (user) {
+        data.assigneeId = user.id;
         data.assigneeAvatar = user.avatar;
       }
     }

@@ -17,6 +17,15 @@ export const ProfileOptionsPage: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  React.useEffect(() => {
+    if (currentUser) {
+      setName(currentUser.name || '');
+      setRole(currentUser.role || '');
+      setAvatar(currentUser.avatar || 'M');
+      setEmail(currentUser.email || '');
+    }
+  }, [currentUser]);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || isSaving) return;

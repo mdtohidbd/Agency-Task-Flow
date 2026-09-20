@@ -62,9 +62,8 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
       </h1>
 
       <div className="flex items-center gap-sm min-w-[40px] justify-end">
-        {rightAction ? (
-          rightAction
-        ) : showSearch ? (
+        {rightAction}
+        {showSearch && (
           <button
             onClick={onSearchToggle}
             aria-label="Search"
@@ -72,8 +71,6 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           >
             <span className="material-symbols-outlined">search</span>
           </button>
-        ) : (
-          <div className="w-10"></div>
         )}
         
         {/* Notification Bell */}

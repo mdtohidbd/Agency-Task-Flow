@@ -8,6 +8,69 @@ interface TaskRowProps {
   onEditRequest?: (task: Task) => void;
   onClick?: () => void;
   showAssignee?: boolean;
+  showProject?: boolean;
+}
+
+/**
+ * Returns a human-readable deadline string with optional time precision.
+ * e.g. "Overdue · 2d ago", "Due today", "Due in 4h 30m", "Due tomorrow", "Due Sep 25"
+ */
+function getDeadlineLabel(
+  dueDate?: string,
+  dueDisplay?: string,
+  dueTime?: string
+): { label: string; urgency: 'overdue' | 'today' | 'soon' | 'future' | 'none' } {
+  const rawDate = dueDate || dueDisplay;
+  if (!rawDate) return { label: '', urgency: 'none' };
+
+  // Build due moment: if a time is stored in dueDisplay like "2026-09-21T15:00" or dueTime is provided
+  const hasTime = dueTime || (dueDisplay && dueDisplay.includes('T'));
+  let dueMs: number;
+
+  if (hasTime) {
+    const iso = dueTime
+      ? `${rawDate.split('T')[0]}T${dueTime}`
+      : (dueDisplay!.includes('T') ? dueDisplay! : `${rawDate}T${dueTime}`);
+    dueMs = new Date(iso).getTime();
+  } else {
+    // End of day for the due date
+    const parts = rawDate.split('T')[0].split('-');
+    dueMs = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 23, 59, 59).getTime();
+  }
+
+  const now = Date.now();
+  const diffMs = dueMs - now;
+  const diffMins = Math.round(diffMs / 60000);
+  const diffHours = Math.round(diffMs / 3600000);
+  const diffDays = Math.round(diffMs / 86400000);
+
+  if (diffMs < 0) {
+    // Overdue
+    const absDays = Math.abs(diffDays);
+    const absHours = Math.abs(Math.round(diffMs / 3600000));
+    if (absDays >= 1) return { label: `Overdue · ${absDays}d ago`, urgency: 'overdue' };
+    if (absHours >= 1) return { label: `Overdue · ${absHours}h ago`, urgency: 'overdue' };
+    return { label: 'Overdue · just now', urgency: 'overdue' };
+  }
+
+  if (hasTime) {
+    // Show precise time remaining
+    if (diffMins < 60) return { label: `Due in ${diffMins}m`, urgency: 'today' };
+    if (diffHours < 24) {
+      const h = Math.floor(diffMins / 60);
+      const m = diffMins % 60;
+      return { label: m > 0 ? `Due in ${h}h ${m}m` : `Due in ${h}h`, urgency: 'today' };
+    }
+  }
+
+  if (diffDays === 0) return { label: 'Due today', urgency: 'today' };
+  if (diffDays === 1) return { label: 'Due tomorrow', urgency: 'soon' };
+  if (diffDays <= 7) return { label: `Due in ${diffDays} days`, urgency: 'soon' };
+
+  // Distant future — show formatted date
+  const date = new Date(dueMs);
+  const formatted = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return { label: `Due ${formatted}`, urgency: 'future' };
 }
 
 export const TaskRow: React.FC<TaskRowProps> = ({
@@ -16,23 +79,45 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   onDeleteRequest,
   onEditRequest,
   onClick,
-  showAssignee = false
+  showAssignee = false,
+  showProject = true,
 }) => {
   const isDone = task.status === 'done';
 
-  // Priority color stroke
   const getPriorityStrokeColor = () => {
     if (isDone) return 'bg-outline-strong dark:bg-outline';
     switch (task.priority) {
-      case 'high':
-        return 'bg-danger';
-      case 'normal':
-        return 'bg-warning';
+      case 'high': return 'bg-danger';
+      case 'normal': return 'bg-warning';
       case 'low':
-      default:
-        return 'bg-primary';
+      default: return 'bg-primary';
     }
   };
+
+  // Extract optional time from dueDisplay if it was stored with time
+  const dueTime = task.dueDisplay && task.dueDisplay.includes('T')
+    ? task.dueDisplay.split('T')[1]?.slice(0, 5)
+    : undefined;
+
+  const { label: deadlineLabel, urgency } = getDeadlineLabel(task.dueDate, task.dueDisplay, dueTime);
+
+  const deadlineColorClass = isDone
+    ? 'text-secondary'
+    : urgency === 'overdue'
+    ? 'text-danger font-semibold'
+    : urgency === 'today'
+    ? 'text-warning font-medium'
+    : urgency === 'soon'
+    ? 'text-on-surface'
+    : 'text-secondary';
+
+  const deadlineIcon = isDone
+    ? 'schedule'
+    : urgency === 'overdue' || (task.priority === 'high' && urgency !== 'future')
+    ? 'warning'
+    : 'schedule';
+
+  const deadlineIconFill = !isDone && (urgency === 'overdue' || task.priority === 'high') ? "'FILL' 1" : "'FILL' 0";
 
   return (
     <div
@@ -74,40 +159,33 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             {task.title}
           </h3>
 
-          {/* Project Tag */}
-          {task.projectName && (
+          {/* Project Name Pill — hidden when inside project detail */}
+          {showProject && task.projectName && (
             <span className="shrink-0 font-label-sm text-label-sm text-secondary border border-outline rounded-full px-2 py-[1px] bg-surface-container-lowest">
               {task.projectName}
             </span>
           )}
         </div>
 
-        {/* Metadata: Due Date & Assignee */}
-        <div className="flex items-center gap-md text-secondary font-label-sm text-label-sm">
-          {(task.startDate || task.dueDisplay) && (
-            <div
-              className={`flex items-center gap-1 ${
-                task.priority === 'high' && !isDone ? 'text-danger font-medium' : 'text-secondary'
-              }`}
-            >
+        {/* Metadata Row: Deadline & Assignee */}
+        <div className="flex items-center gap-md text-secondary font-label-sm text-label-sm flex-wrap">
+          {deadlineLabel && (
+            <div className={`flex items-center gap-1 ${deadlineColorClass}`}>
               <span
                 className="material-symbols-outlined text-[15px]"
-                style={{
-                  fontVariationSettings: task.priority === 'high' && !isDone ? "'FILL' 1" : "'FILL' 0"
-                }}
+                style={{ fontVariationSettings: deadlineIconFill }}
               >
-                {task.priority === 'high' && !isDone ? 'warning' : 'schedule'}
+                {deadlineIcon}
               </span>
-              {task.startDate && task.dueDisplay && task.startDate !== task.dueDate ? (
-                <span className="flex items-center gap-1">
-                  <span>{task.startDate}</span>
-                  <span className="text-[11px] opacity-60">→</span>
-                  <span>{task.dueDisplay}</span>
-                </span>
-              ) : (
-                <span>{task.dueDisplay || task.startDate}</span>
-              )}
+              <span>{deadlineLabel}</span>
             </div>
+          )}
+
+          {/* Start date context — only when different from due and task is not done */}
+          {!isDone && task.startDate && task.dueDate && task.startDate !== task.dueDate.split('T')[0] && (
+            <span className="text-secondary opacity-60 text-[11px]">
+              from {new Date(task.startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
           )}
 
           {showAssignee && task.assigneeName && (

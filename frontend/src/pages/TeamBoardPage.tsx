@@ -45,6 +45,29 @@ export const TeamBoardPage: React.FC = () => {
     loadData();
   }, []);
 
+  // Listen for sidebar "+ New Task" trigger and keyboard shortcuts
+  useEffect(() => {
+    const handleOpenNewTask = () => {
+      setTaskToEdit(null);
+      setIsBottomSheetOpen(true);
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput = activeEl && ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeEl.tagName);
+      if (!isInput && (e.key === 'c' || e.key === 'n') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        handleOpenNewTask();
+      }
+    };
+
+    window.addEventListener('open-new-task', handleOpenNewTask);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('open-new-task', handleOpenNewTask);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   const handleUpdateTaskQuick = async (updatedTask: Task) => {
     // Optimistic UI update
     setTasks((prev) =>
@@ -185,28 +208,42 @@ export const TeamBoardPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Task List: To Do */}
-        <section className="flex flex-col">
-          <div className="flex justify-between items-center mb-sm border-b border-outline pb-1">
-            <h2 className="font-headline-md text-headline-md text-primary flex items-center gap-1.5">
-              <span>To Do</span>
-              <span className="text-xs bg-ink-blue-container text-primary px-2 py-0.5 rounded-full font-bold">
-                {todoTasks.length}
-              </span>
-            </h2>
-          </div>
+        {/* Responsive Kanban Columns (Side-by-side on lg screens) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          {/* Task List: To Do */}
+          <section className="flex flex-col bg-surface-container-lowest/50 dark:bg-surface/50 border border-outline rounded-xl p-3 shadow-xs">
+            <div className="flex justify-between items-center mb-sm border-b border-outline pb-1.5">
+              <h2 className="font-headline-md text-headline-md text-primary flex items-center gap-1.5">
+                <span>To Do</span>
+                <span className="text-xs bg-ink-blue-container text-primary px-2 py-0.5 rounded-full font-bold">
+                  {todoTasks.length}
+                </span>
+              </h2>
+              <button
+                type="button"
+                onClick={() => {
+                  setTaskToEdit(null);
+                  setIsBottomSheetOpen(true);
+                }}
+                className="text-primary hover:bg-primary/10 px-2 py-0.5 rounded-md text-label-sm font-bold flex items-center gap-0.5 transition-colors"
+                title="Add To Do Task"
+              >
+                <span className="material-symbols-outlined text-[16px]">add</span>
+                <span className="hidden sm:inline">Add</span>
+              </button>
+            </div>
 
-          {isLoading ? (
-            <div className="py-8 text-center text-secondary font-body-md animate-fadeIn">
-              Loading team tasks...
-            </div>
-          ) : todoTasks.length === 0 ? (
-            <div className="py-8 text-center text-secondary font-body-md border border-dashed border-outline rounded-lg my-2 bg-surface/50">
-              No tasks currently in To Do for this filter.
-            </div>
-          ) : (
-            <div className="flex flex-col">
-              {todoTasks.map((task) => (
+            {isLoading ? (
+              <div className="py-8 text-center text-secondary font-body-md animate-fadeIn">
+                Loading team tasks...
+              </div>
+            ) : todoTasks.length === 0 ? (
+              <div className="py-8 text-center text-secondary font-body-md border border-dashed border-outline rounded-lg my-2 bg-surface/50">
+                No tasks currently in To Do for this filter.
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                {todoTasks.map((task) => (
                   <TaskRow
                     key={task.id}
                     task={task}
@@ -216,15 +253,14 @@ export const TeamBoardPage: React.FC = () => {
                     onClick={() => handleViewRequest(task)}
                     showAssignee={true}
                   />
-              ))}
-            </div>
-          )}
-        </section>
+                ))}
+              </div>
+            )}
+          </section>
 
-        {/* Task List: Done */}
-        {doneTasks.length > 0 && (
-          <section className="flex flex-col mt-md opacity-80">
-            <div className="flex justify-between items-center mb-sm border-b border-outline pb-1">
+          {/* Task List: Done */}
+          <section className="flex flex-col bg-surface-container-lowest/30 dark:bg-surface/30 border border-outline rounded-xl p-3 opacity-90 shadow-xs">
+            <div className="flex justify-between items-center mb-sm border-b border-outline pb-1.5">
               <h2 className="font-headline-md text-headline-md text-secondary flex items-center gap-1.5">
                 <span>Done</span>
                 <span className="text-xs bg-surface-container text-secondary px-2 py-0.5 rounded-full">
@@ -232,8 +268,14 @@ export const TeamBoardPage: React.FC = () => {
                 </span>
               </h2>
             </div>
-            <div className="flex flex-col">
-              {doneTasks.map((task) => (
+
+            {doneTasks.length === 0 ? (
+              <div className="py-8 text-center text-secondary font-body-md border border-dashed border-outline rounded-lg my-2 bg-surface/30">
+                No completed tasks yet.
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                {doneTasks.map((task) => (
                   <TaskRow
                     key={task.id}
                     task={task}
@@ -243,10 +285,11 @@ export const TeamBoardPage: React.FC = () => {
                     onClick={() => handleViewRequest(task)}
                     showAssignee={true}
                   />
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
-        )}
+        </div>
 
         <div className="h-28 w-full" />
       </main>
@@ -259,7 +302,7 @@ export const TeamBoardPage: React.FC = () => {
           setTaskToEdit(null);
           setIsBottomSheetOpen(true);
         }}
-        className="fixed bottom-20 md:bottom-16 right-margin-mobile w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center hover:bg-surface-tint active:scale-90 transition-all shadow-lg z-40 btn-tactile"
+        className="lg:hidden fixed bottom-20 md:bottom-16 right-margin-mobile w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center hover:bg-surface-tint active:scale-90 transition-all shadow-lg z-40 btn-tactile"
       >
         <span className="material-symbols-outlined text-[28px]">add</span>
       </button>

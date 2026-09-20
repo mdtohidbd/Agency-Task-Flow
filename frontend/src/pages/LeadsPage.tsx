@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Lead } from '../types';
 import { api } from '../services/api';
 import { TopAppBar } from '../components/layout/TopAppBar';
 import { BottomNavBar } from '../components/layout/BottomNavBar';
 import { ResponsiveContainer } from '../components/layout/ResponsiveContainer';
 import { ProfileSidebarDrawer } from '../components/drawer/ProfileSidebarDrawer';
-import { LeadRow } from '../components/leads/LeadRow';
+import { LeadRow, getFollowUpUrgency } from '../components/leads/LeadRow';
 import { CreateLeadBottomSheet } from '../components/leads/CreateLeadBottomSheet';
 import { LeadDetailModal } from '../components/leads/LeadDetailModal';
+
+type FilterTab = 'all' | 'urgent_followup' | 'proposal_qualified' | 'closed';
 
 export const LeadsPage: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -18,6 +20,11 @@ export const LeadsPage: React.FC = () => {
   
   const [leadToView, setLeadToView] = useState<Lead | null>(null);
   const [leadToEdit, setLeadToEdit] = useState<Lead | null>(null);
+
+  // Filters
+  const [activeTab, setActiveTab] = useState<FilterTab>('all');
+  const [selectedProjectType, setSelectedProjectType] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const loadLeads = async () => {
     setIsLoading(true);
@@ -46,7 +53,7 @@ export const LeadsPage: React.FC = () => {
       setLeadToEdit(null);
     } catch (err) {
       console.error('Failed to save lead', err);
-      throw err; // throw to be caught by bottom sheet
+      throw err;
     }
   };
 
@@ -60,100 +67,338 @@ export const LeadsPage: React.FC = () => {
     }
 
     try {
-      await api.updateLead(updatedLead.id, { 
-        status: updatedLead.status,
-        notes: updatedLead.notes
-      });
+      await api.updateLead(updatedLead.id, updatedLead);
     } catch (err) {
       console.error('Failed to update lead:', err);
       loadLeads(); // rollback on failure
     }
   };
 
-  // Group leads by status
-  const groupedLeads = {
-    active: leads.filter(l => ['new', 'contacted', 'qualified'].includes(l.status)),
-    closed: leads.filter(l => ['won', 'lost'].includes(l.status))
-  };
+  // Extract unique project types for filter
+  const uniqueProjectTypes = useMemo(() => {
+    const types = new Set<string>();
+    leads.forEach((l) => {
+      const t = l.projectType || l.websiteType;
+      if (t) types.add(t);
+    });
+    return Array.from(types);
+  }, [leads]);
+
+  // Metrics calculation
+  const metrics = useMemo(() => {
+    let overdueCount = 0;
+    let todayCount = 0;
+    let activeValue = 0;
+    let activeDeals = 0;
+
+    leads.forEach((l) => {
+      const isActive = ['new', 'contacted', 'proposal', 'qualified'].includes(l.status);
+      if (isActive) {
+        activeDeals++;
+        if (l.value) activeValue += l.value;
+        
+        if (l.nextFollowUpDate) {
+          const urgency = getFollowUpUrgency(l.nextFollowUpDate);
+          if (urgency.status === 'overdue') overdueCount++;
+          if (urgency.status === 'today') todayCount++;
+        }
+      }
+    });
+
+    return { overdueCount, todayCount, activeValue, activeDeals };
+  }, [leads]);
+
+  // Filtered leads
+  const filteredLeads = useMemo(() => {
+    return leads.filter((lead) => {
+      const isActive = ['new', 'contacted', 'proposal', 'qualified'].includes(lead.status);
+      const isClosed = ['won', 'lost'].includes(lead.status);
+
+      // Search matching
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchName = lead.name.toLowerCase().includes(q);
+        const matchCompany = lead.company?.toLowerCase().includes(q);
+        const matchType = (lead.projectType || lead.websiteType || '').toLowerCase().includes(q);
+        if (!matchName && !matchCompany && !matchType) return false;
+      }
+
+      // Project Type filter
+      if (selectedProjectType !== 'all') {
+        const t = lead.projectType || lead.websiteType;
+        if (t !== selectedProjectType) return false;
+      }
+
+      // Tab filter
+      if (activeTab === 'urgent_followup') {
+        if (!isActive || !lead.nextFollowUpDate) return false;
+        const urgency = getFollowUpUrgency(lead.nextFollowUpDate);
+        return urgency.status === 'overdue' || urgency.status === 'today';
+      }
+
+      if (activeTab === 'proposal_qualified') {
+        return lead.status === 'proposal' || lead.status === 'qualified';
+      }
+
+      if (activeTab === 'closed') {
+        return isClosed;
+      }
+
+      // 'all' tab shows active leads primarily
+      return isActive;
+    });
+  }, [leads, activeTab, selectedProjectType, searchQuery]);
+
+  // Closed leads for bottom section when on 'all' tab
+  const closedLeads = useMemo(() => {
+    if (activeTab !== 'all') return [];
+    return leads.filter((l) => ['won', 'lost'].includes(l.status));
+  }, [leads, activeTab]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background dark:bg-black transition-colors duration-200 pb-[calc(env(safe-area-inset-bottom)+80px)] lg:pb-0">
+    <ResponsiveContainer>
       <TopAppBar
         title="CRM Leads"
         onOpenDrawer={() => setIsDrawerOpen(true)}
       />
 
-      <ResponsiveContainer>
-        <div className="p-margin-mobile flex flex-col gap-xl">
-          
-          {/* Active Pipeline */}
-          <section>
+      <main className="flex-1 w-full p-margin-mobile flex flex-col gap-lg">
+        {/* KPI / Follow-up Dashboard Summary */}
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div 
+            onClick={() => setActiveTab('urgent_followup')}
+            className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
+              metrics.overdueCount > 0 
+                ? 'bg-rose-500/10 border-rose-500/30 hover:border-rose-500' 
+                : 'bg-surface border-outline'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-bold">
+                Overdue Follow-up
+              </span>
+              <span className="material-symbols-outlined text-[18px] text-rose-500">warning</span>
+            </div>
+            <div className="font-headline-md text-headline-md font-bold text-rose-600 dark:text-rose-400 mt-1">
+              {metrics.overdueCount}
+            </div>
+            <span className="text-label-sm text-secondary/80">Requires outreach</span>
+          </div>
+
+          <div 
+            onClick={() => setActiveTab('urgent_followup')}
+            className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
+              metrics.todayCount > 0 
+                ? 'bg-amber-500/10 border-amber-500/30 hover:border-amber-500' 
+                : 'bg-surface border-outline'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-bold">
+                Due Today
+              </span>
+              <span className="material-symbols-outlined text-[18px] text-amber-500">notifications_active</span>
+            </div>
+            <div className="font-headline-md text-headline-md font-bold text-amber-600 dark:text-amber-400 mt-1">
+              {metrics.todayCount}
+            </div>
+            <span className="text-label-sm text-secondary/80">Scheduled today</span>
+          </div>
+
+          <div 
+            onClick={() => setActiveTab('all')}
+            className="p-3.5 rounded-2xl border border-outline bg-surface hover:border-primary/50 transition-all cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-bold">
+                Active Deals
+              </span>
+              <span className="material-symbols-outlined text-[18px] text-primary">work</span>
+            </div>
+            <div className="font-headline-md text-headline-md font-bold text-on-surface mt-1">
+              {metrics.activeDeals}
+            </div>
+            <span className="text-label-sm text-secondary/80">In active pipeline</span>
+          </div>
+
+          <div className="p-3.5 rounded-2xl border border-outline bg-surface">
+            <div className="flex items-center justify-between">
+              <span className="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-bold">
+                Pipeline Value
+              </span>
+              <span className="material-symbols-outlined text-[18px] text-emerald-600">payments</span>
+            </div>
+            <div className="font-headline-md text-headline-md font-bold text-emerald-700 dark:text-emerald-400 mt-1">
+              ${metrics.activeValue.toLocaleString()}
+            </div>
+            <span className="text-label-sm text-secondary/80">Active opportunity</span>
+          </div>
+        </section>
+
+        {/* Filter Toolbar & Actions */}
+        <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          {/* Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`px-3.5 py-1.5 rounded-xl font-label-md text-label-md font-bold transition-all shrink-0 ${
+                activeTab === 'all'
+                  ? 'bg-primary text-on-primary shadow-xs'
+                  : 'bg-surface border border-outline text-secondary hover:text-on-surface'
+              }`}
+            >
+              Active Pipeline
+            </button>
+            <button
+              onClick={() => setActiveTab('urgent_followup')}
+              className={`px-3.5 py-1.5 rounded-xl font-label-md text-label-md font-bold transition-all shrink-0 flex items-center gap-1 ${
+                activeTab === 'urgent_followup'
+                  ? 'bg-primary text-on-primary shadow-xs'
+                  : 'bg-surface border border-outline text-secondary hover:text-on-surface'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[16px]">schedule</span>
+              Follow-ups Due
+              {(metrics.overdueCount + metrics.todayCount) > 0 && (
+                <span className="ml-1 px-1.5 py-0.2 bg-rose-500 text-white rounded-full text-label-sm">
+                  {metrics.overdueCount + metrics.todayCount}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('proposal_qualified')}
+              className={`px-3.5 py-1.5 rounded-xl font-label-md text-label-md font-bold transition-all shrink-0 ${
+                activeTab === 'proposal_qualified'
+                  ? 'bg-primary text-on-primary shadow-xs'
+                  : 'bg-surface border border-outline text-secondary hover:text-on-surface'
+              }`}
+            >
+              Proposal & Qualified
+            </button>
+            <button
+              onClick={() => setActiveTab('closed')}
+              className={`px-3.5 py-1.5 rounded-xl font-label-md text-label-md font-bold transition-all shrink-0 ${
+                activeTab === 'closed'
+                  ? 'bg-primary text-on-primary shadow-xs'
+                  : 'bg-surface border border-outline text-secondary hover:text-on-surface'
+              }`}
+            >
+              Closed Deals
+            </button>
+          </div>
+
+          {/* Search, Project Type Filter & Add Lead Button */}
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+            {/* Search Input */}
+            <div className="relative flex-1 sm:w-48">
+              <span className="material-symbols-outlined text-[18px] text-secondary absolute left-3 top-1/2 -translate-y-1/2">
+                search
+              </span>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search leads..."
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-surface border border-outline outline-none text-body-md focus:border-primary"
+              />
+            </div>
+
+            {/* Project Type Filter */}
+            {uniqueProjectTypes.length > 0 && (
+              <select
+                value={selectedProjectType}
+                onChange={(e) => setSelectedProjectType(e.target.value)}
+                className="px-3 py-1.5 rounded-xl bg-surface border border-outline outline-none text-body-md text-on-surface cursor-pointer"
+              >
+                <option value="all">All Project Types</option>
+                {uniqueProjectTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Add Lead Desktop Button */}
+            <button
+              type="button"
+              onClick={() => {
+                setLeadToEdit(null);
+                setIsCreateSheetOpen(true);
+              }}
+              className="hidden md:inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-primary text-on-primary hover:bg-primary/90 font-label-md text-label-md font-bold shadow-button transition-all shrink-0"
+            >
+              <span className="material-symbols-outlined text-[16px]">person_add</span>
+              Add Lead
+            </button>
+          </div>
+        </div>
+
+        {/* Lead Cards List */}
+        <section>
+          {isLoading ? (
+            <div className="flex justify-center py-16">
+              <span className="material-symbols-outlined animate-spin text-primary text-[36px]">sync</span>
+            </div>
+          ) : filteredLeads.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+              {filteredLeads.map((lead) => (
+                <LeadRow 
+                  key={lead.id} 
+                  lead={lead} 
+                  onClick={() => setLeadToView(lead)} 
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-14 px-6 bg-surface-container/50 rounded-2xl border border-outline border-dashed">
+              <span className="material-symbols-outlined text-[48px] text-secondary/50 mb-2">person_search</span>
+              <p className="font-body-lg text-body-lg text-secondary font-medium">
+                {activeTab === 'urgent_followup'
+                  ? 'No overdue or due today follow-ups!'
+                  : 'No leads found in this view.'}
+              </p>
+              <p className="font-body-sm text-body-sm text-secondary/80 mt-1">
+                {activeTab === 'urgent_followup'
+                  ? 'Great job keeping up with client outreach.'
+                  : 'Create a new lead to populate your pipeline.'}
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* Closed / Resolved Deals (shown at bottom on 'all' tab if any exist) */}
+        {closedLeads.length > 0 && (
+          <section className="mt-4">
             <div className="flex items-center justify-between mb-sm pb-unit border-b border-outline">
               <h2 className="font-headline-md text-headline-md text-secondary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px]">moving</span>
-                Active Pipeline
+                <span className="material-symbols-outlined text-[20px]">inventory_2</span>
+                Closed Deals
               </h2>
               <span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-0.5 rounded-full">
-                {groupedLeads.active.length} Leads
+                {closedLeads.length} Leads
               </span>
             </div>
-            
-            {isLoading ? (
-              <div className="flex justify-center py-10">
-                <span className="material-symbols-outlined animate-spin text-primary text-[32px]">sync</span>
-              </div>
-            ) : groupedLeads.active.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
-                {groupedLeads.active.map(lead => (
-                  <LeadRow 
-                    key={lead.id} 
-                    lead={lead} 
-                    onClick={() => setLeadToView(lead)} 
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 px-6 bg-surface-container rounded-2xl border border-outline border-dashed">
-                <span className="material-symbols-outlined text-[48px] text-secondary/50 mb-2">group_add</span>
-                <p className="font-body-lg text-body-lg text-secondary">No active leads found.</p>
-                <p className="font-body-sm text-body-sm text-secondary/80 mt-1">Add a lead to start tracking your pipeline.</p>
-              </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md opacity-75">
+              {closedLeads.map((lead) => (
+                <LeadRow 
+                  key={lead.id} 
+                  lead={lead} 
+                  onClick={() => setLeadToView(lead)} 
+                />
+              ))}
+            </div>
           </section>
+        )}
+      </main>
 
-          {/* Closed / Resolved */}
-          {groupedLeads.closed.length > 0 && (
-            <section>
-              <div className="flex items-center justify-between mb-sm pb-unit border-b border-outline">
-                <h2 className="font-headline-md text-headline-md text-secondary flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[20px]">inventory_2</span>
-                  Closed Deals
-                </h2>
-                <span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-0.5 rounded-full">
-                  {groupedLeads.closed.length} Leads
-                </span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md opacity-70">
-                {groupedLeads.closed.map(lead => (
-                  <LeadRow 
-                    key={lead.id} 
-                    lead={lead} 
-                    onClick={() => setLeadToView(lead)} 
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
-      </ResponsiveContainer>
-
-      {/* Floating Action Button */}
+      {/* Floating Action Button for Mobile */}
       <button
         onClick={() => {
           setLeadToEdit(null);
           setIsCreateSheetOpen(true);
         }}
-        className="fixed z-20 bottom-24 lg:bottom-8 right-margin-mobile w-14 h-14 bg-primary text-on-primary rounded-full shadow-fab hover:shadow-fab-hover active:scale-95 transition-all flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-primary/30"
+        className="lg:hidden fixed z-20 bottom-24 right-margin-mobile w-14 h-14 bg-primary text-on-primary rounded-full shadow-fab hover:shadow-fab-hover active:scale-95 transition-all flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-primary/30"
         aria-label="Add new lead"
       >
         <span className="material-symbols-outlined text-[28px]">add</span>
@@ -186,6 +431,6 @@ export const LeadsPage: React.FC = () => {
         }}
         onUpdate={handleUpdateLeadQuick}
       />
-    </div>
+    </ResponsiveContainer>
   );
 };

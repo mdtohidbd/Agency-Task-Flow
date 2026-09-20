@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { db } from '../db/store.js';
-import { ApiResponse, SystemMetric } from '../types/index.js';
+import { ApiResponse, SystemMetric, DbStats } from '../types/index.js';
 
 export const systemController = {
   async getHealth(_req: Request, res: Response<ApiResponse<SystemMetric>>): Promise<void> {
@@ -8,6 +8,14 @@ export const systemController = {
     res.json({
       success: true,
       data: metric
+    });
+  },
+
+  async getDbStats(_req: Request, res: Response<ApiResponse<DbStats>>): Promise<void> {
+    const stats = await db.getDbStats();
+    res.json({
+      success: true,
+      data: stats
     });
   },
 

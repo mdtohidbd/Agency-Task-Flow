@@ -11,6 +11,7 @@ interface AuthContextType {
   updateProfile: (data: Partial<User>) => Promise<void>;
   logout: () => void;
   refreshTeammates: () => Promise<void>;
+  syncUser: (updatedUser: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,10 +21,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [teammates, setTeammates] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const syncUser = (updatedUser: User) => {
+    setTeammates(prev => prev.map(u => (u.id === updatedUser.id ? updatedUser : u)));
+    setCurrentUser(prev => {
+      if (prev && prev.id === updatedUser.id) {
+        return updatedUser;
+      }
+      return prev;
+    });
+  };
+
   const refreshTeammates = async () => {
     try {
       const users = await api.getUsers();
       setTeammates(users);
+      const activeId = localStorage.getItem('agencysync_active_user_id') || currentUser?.id;
+      if (activeId) {
+        const freshUser = users.find(u => u.id === activeId);
+        if (freshUser) {
+          setCurrentUser(freshUser);
+        }
+      }
     } catch (err) {
       console.error('Failed to load teammates:', err);
     }
@@ -59,9 +77,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initAuth();
   }, []);
 
-  const login = async (userId: string, password = '123456') => {
+  const login = async (userIdOrEmail: string, password = '123456') => {
     try {
-      const res = await api.login({ userId, password });
+      const isEmail = userIdOrEmail.includes('@');
+      const payload = isEmail ? { email: userIdOrEmail, password } : { userId: userIdOrEmail, password };
+      const res = await api.login(payload);
       localStorage.setItem('agencysync_token', res.token);
       localStorage.setItem('agencysync_active_user_id', res.user.id);
       setCurrentUser(res.user);
@@ -118,7 +138,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         updateProfile,
         logout,
-        refreshTeammates
+        refreshTeammates,
+        syncUser
       }}
     >
       {children}

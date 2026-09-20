@@ -1,4 +1,4 @@
-import { ApiResponse, User, Task, Project, Resource, SystemMetric, TaskStatus, Priority, Notification, Lead } from '../types';
+import { ApiResponse, User, Task, Project, Resource, SystemMetric, DbStats, TaskStatus, Priority, Notification, Lead, FinanceEntry, FinanceSettings, MonthlyFinanceReport, Deliverable } from '../types';
 
 const API_BASE = '/api/v1';
 
@@ -56,10 +56,49 @@ export const api = {
     return request<User>(`/users/${id}`);
   },
 
+  async createUser(data: {
+    name: string;
+    email: string;
+    role: string;
+    password?: string;
+    avatar?: string;
+    status?: 'active' | 'revoked';
+  }): Promise<User> {
+    return request<User>('/users', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
   async updateUser(id: string, data: Partial<User>): Promise<User> {
     return request<User>(`/users/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data)
+    });
+  },
+
+  async deleteUser(id: string): Promise<{ id: string; message: string }> {
+    return request<{ id: string; message: string }>(`/users/${id}`, {
+      method: 'DELETE'
+    });
+  },
+
+  async revokeUser(id: string): Promise<User> {
+    return request<User>(`/users/${id}/revoke`, {
+      method: 'PATCH'
+    });
+  },
+
+  async reactivateUser(id: string): Promise<User> {
+    return request<User>(`/users/${id}/reactivate`, {
+      method: 'PATCH'
+    });
+  },
+
+  async changeUserPassword(id: string, newPassword: string): Promise<{ message: string }> {
+    return request<{ message: string }>(`/users/${id}/password`, {
+      method: 'PATCH',
+      body: JSON.stringify({ newPassword })
     });
   },
 
@@ -119,7 +158,16 @@ export const api = {
     return request<Project>(`/projects/${id}`);
   },
 
-  async createProject(data: { name: string; category?: string; startDate?: string; dueDate?: string; memberIds?: string[] }): Promise<Project> {
+  async createProject(data: {
+    name: string;
+    category?: string;
+    startDate?: string;
+    dueDate?: string;
+    priority?: import('../types').ProjectPriority;
+    status?: import('../types').ProjectStatus;
+    memberIds?: string[];
+    deliverables?: Partial<Deliverable>[];
+  }): Promise<Project> {
     return request<Project>('/projects', {
       method: 'POST',
       body: JSON.stringify(data)
@@ -139,6 +187,26 @@ export const api = {
     });
   },
 
+  async addDeliverable(projectId: string, data: Partial<Deliverable>): Promise<Project> {
+    return request<Project>(`/projects/${projectId}/deliverables`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  async updateDeliverable(projectId: string, deliverableId: string, data: Partial<Deliverable>): Promise<Project> {
+    return request<Project>(`/projects/${projectId}/deliverables/${deliverableId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+
+  async deleteDeliverable(projectId: string, deliverableId: string): Promise<Project> {
+    return request<Project>(`/projects/${projectId}/deliverables/${deliverableId}`, {
+      method: 'DELETE'
+    });
+  },
+
   // Resources
   async getResources(projectId?: string): Promise<Resource[]> {
     const qs = projectId ? `?projectId=${encodeURIComponent(projectId)}` : '';
@@ -152,7 +220,7 @@ export const api = {
     fileExt?: string;
     fileSize?: string;
     content?: string;
-    projectId?: string;
+    projectId: string; // Mandatory project association
   }): Promise<Resource> {
     return request<Resource>('/resources', {
       method: 'POST',
@@ -160,9 +228,26 @@ export const api = {
     });
   },
 
+  async deleteResource(id: string): Promise<void> {
+    return request<void>(`/resources/${id}`, {
+      method: 'DELETE'
+    });
+  },
+
+  async updateResource(id: string, data: Partial<Resource>): Promise<Resource> {
+    return request<Resource>(`/resources/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+
   // System
   async getSystemHealth(): Promise<SystemMetric> {
     return request<SystemMetric>('/system/health');
+  },
+
+  async getDbStats(): Promise<DbStats> {
+    return request<DbStats>('/system/db-stats');
   },
 
   async forceSync(): Promise<SystemMetric> {
@@ -197,5 +282,38 @@ export const api = {
     method: 'PATCH',
     body: JSON.stringify(updates)
   }),
-  deleteLead: (id: string) => request<{ id: string }>(`/leads/${id}`, { method: 'DELETE' })
+  deleteLead: (id: string) => request<{ id: string }>(`/leads/${id}`, { method: 'DELETE' }),
+
+  // Finance Entries
+  getFinanceEntries: (params?: { month?: string; entryType?: string; projectId?: string }) => {
+    const q = new URLSearchParams();
+    if (params?.month) q.append('month', params.month);
+    if (params?.entryType) q.append('entryType', params.entryType);
+    if (params?.projectId) q.append('projectId', params.projectId);
+    const qs = q.toString();
+    return request<FinanceEntry[]>(`/finance${qs ? `?${qs}` : ''}`);
+  },
+  createFinanceEntry: (data: Partial<FinanceEntry>) => request<FinanceEntry>('/finance', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  updateFinanceEntry: (id: string, data: Partial<FinanceEntry>) => request<FinanceEntry>(`/finance/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  }),
+  deleteFinanceEntry: (id: string) => request<{ id: string }>(`/finance/${id}`, { method: 'DELETE' }),
+
+  // Finance Report
+  getMonthlyReport: (month?: string) => {
+    const qs = month ? `?month=${month}` : '';
+    return request<MonthlyFinanceReport>(`/finance/report${qs}`);
+  },
+
+  // Finance Settings
+  getFinanceSettings: () => request<FinanceSettings>('/finance/settings'),
+  updateFinanceSettings: (data: Partial<FinanceSettings>) => request<FinanceSettings>('/finance/settings', {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  }),
 };
+

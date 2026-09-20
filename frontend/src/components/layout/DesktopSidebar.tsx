@@ -2,9 +2,22 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
+const checkIsAdmin = (user: any) => {
+  if (!user) return false;
+  const id = user.id || '';
+  const name = (user.name || '').toLowerCase();
+  const email = (user.email || '').toLowerCase();
+  const role = (user.role || '').toLowerCase();
+  return id === 'user-mahim' || id === 'user-touhidul' ||
+    name.includes('mahim') || name.includes('tohid') || name.includes('touhid') ||
+    email.includes('mahim') || email.includes('tohid') || email.includes('touhid') ||
+    role.includes('admin');
+};
+
 export const DesktopSidebar: React.FC = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const isAdmin = checkIsAdmin(currentUser);
 
   const handleLogout = () => {
     logout();
@@ -15,7 +28,10 @@ export const DesktopSidebar: React.FC = () => {
     { to: '/tasks', icon: 'task_alt', label: 'My Tasks' },
     { to: '/team', icon: 'group', label: 'Team Board' },
     { to: '/projects', icon: 'folder', label: 'Projects' },
+    { to: '/leads', icon: 'contact_page', label: 'CRM Leads' },
+    { to: '/finance', icon: 'account_balance_wallet', label: 'Finance' },
     { to: '/resources', icon: 'folder_open', label: 'Resources' },
+    ...(isAdmin ? [{ to: '/admin', icon: 'admin_panel_settings', label: 'Admin Panel' }] : []),
     { to: '/profile', icon: 'person', label: 'Profile Options' },
     { to: '/settings', icon: 'settings', label: 'Settings' },
   ];
@@ -78,14 +94,14 @@ export const DesktopSidebar: React.FC = () => {
         </ul>
       </nav>
 
-      {/* Bottom Section: Switch Teammate */}
+      {/* Bottom Section: Logout */}
       <div className="p-4 border-t border-outline">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 py-2.5 text-primary font-body-lg text-body-lg rounded-full border border-outline hover:bg-ink-blue-container transition-colors btn-tactile"
+          className="w-full flex items-center justify-center gap-2 py-2.5 text-secondary hover:text-error font-body-lg text-body-lg rounded-full border border-outline hover:border-error/30 hover:bg-error/5 transition-colors btn-tactile cursor-pointer"
         >
           <span className="material-symbols-outlined text-[20px]">logout</span>
-          Switch Teammate
+          Logout
         </button>
       </div>
     </aside>

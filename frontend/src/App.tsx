@@ -10,6 +10,8 @@ import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { ProjectResourcesPage } from './pages/ProjectResourcesPage';
 import { LeadsPage } from './pages/LeadsPage';
+import { FinancePage } from './pages/FinancePage';
+import { AdminPage } from './pages/AdminPage';
 import { ProfileOptionsPage } from './pages/ProfileOptionsPage';
 import { SettingsPage } from './pages/SettingsPage';
 
@@ -28,6 +30,8 @@ export function App() {
               <Route path="/projects/:id" element={<ProjectDetailPage />} />
               <Route path="/resources" element={<ProjectResourcesPage />} />
               <Route path="/leads" element={<LeadsPage />} />
+              <Route path="/finance" element={<FinancePage />} />
+              <Route path="/admin" element={<AdminPage />} />
               <Route path="/profile" element={<ProfileOptionsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<Navigate to="/tasks" replace />} />

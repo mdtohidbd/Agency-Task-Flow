@@ -54,6 +54,29 @@ export const MyTasksPage: React.FC = () => {
     loadData();
   }, [currentUser?.id]);
 
+  // Listen for sidebar "+ New Task" trigger and keyboard shortcuts
+  useEffect(() => {
+    const handleOpenNewTask = () => {
+      setTaskToEdit(null);
+      setIsBottomSheetOpen(true);
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput = activeEl && ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeEl.tagName);
+      if (!isInput && (e.key === 'c' || e.key === 'n') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        handleOpenNewTask();
+      }
+    };
+
+    window.addEventListener('open-new-task', handleOpenNewTask);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('open-new-task', handleOpenNewTask);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   const handleUpdateTaskQuick = async (updatedTask: Task) => {
     // Optimistic UI update
     setTasks((prev) =>
@@ -182,17 +205,32 @@ export const MyTasksPage: React.FC = () => {
               </h2>
             </div>
 
-            {/* Quick Completion Progress Pill */}
-            {totalCount > 0 && (
-              <div className="flex items-center gap-2 bg-surface-container dark:bg-surface border border-outline rounded-full px-3 py-1 shrink-0">
-                <span className="font-label-sm text-label-sm text-secondary">
-                  {doneCount}/{totalCount} done
-                </span>
-                <span className="font-label-sm text-label-sm text-primary font-bold">
-                  {progressPercent}%
-                </span>
-              </div>
-            )}
+            {/* Quick Actions & Progress Pill */}
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setTaskToEdit(null);
+                  setIsBottomSheetOpen(true);
+                }}
+                className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 bg-primary text-on-primary rounded-full font-label-sm text-label-sm font-bold hover:bg-surface-tint shadow-xs transition-all btn-tactile"
+              >
+                <span className="material-symbols-outlined text-[16px]">add</span>
+                <span>New Task</span>
+                <kbd className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded ml-1 font-mono">C</kbd>
+              </button>
+
+              {totalCount > 0 && (
+                <div className="flex items-center gap-2 bg-surface-container dark:bg-surface border border-outline rounded-full px-3 py-1 shrink-0">
+                  <span className="font-label-sm text-label-sm text-secondary">
+                    {doneCount}/{totalCount} done
+                  </span>
+                  <span className="font-label-sm text-label-sm text-primary font-bold">
+                    {progressPercent}%
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Quick Filter Segmented Pills */}
@@ -329,7 +367,7 @@ export const MyTasksPage: React.FC = () => {
           setTaskToEdit(null);
           setIsBottomSheetOpen(true);
         }}
-        className="fixed bottom-20 md:bottom-16 right-margin-mobile w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center hover:bg-surface-tint active:scale-90 transition-all shadow-lg z-40 btn-tactile"
+        className="lg:hidden fixed bottom-20 md:bottom-16 right-margin-mobile w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center hover:bg-surface-tint active:scale-90 transition-all shadow-lg z-40 btn-tactile"
       >
         <span className="material-symbols-outlined text-[28px]">add</span>
       </button>

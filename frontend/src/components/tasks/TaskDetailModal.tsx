@@ -19,6 +19,18 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onDelete
 }) => {
   const [copyFeedback, setCopyFeedback] = React.useState(false);
+
+  // Close on Escape key
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !task) return null;
 
   const isDone = task.status === 'done';
@@ -100,7 +112,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-surface dark:bg-surface-dim w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl shadow-sheet-lift max-h-[85vh] overflow-y-auto animate-fadeIn"
+        className="bg-surface dark:bg-surface-dim w-full sm:max-w-xl md:max-w-2xl sm:rounded-2xl rounded-t-2xl shadow-sheet-lift md:shadow-2xl border-t sm:border border-outline max-h-[85vh] overflow-y-auto animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -307,6 +319,17 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             </button>
           )}
           <div className="flex-1"></div>
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              onEdit(task);
+            }}
+            className="px-4 py-2 font-body-md border border-outline text-on-surface hover:bg-surface-variant rounded-full transition-colors flex items-center gap-1.5"
+          >
+            <span className="material-symbols-outlined text-[16px]">edit</span>
+            Edit Task
+          </button>
           <button
             type="button"
             onClick={onClose}

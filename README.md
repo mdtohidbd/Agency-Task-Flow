@@ -1,43 +1,42 @@
-# AgencySync — Minimal Notepad Task Flow (Fullstack)
+# AgencySync — Agency Task Flow
 
-AgencySync is a minimal, tactile task and project management application for creative teams and agencies. It translates the feeling of writing in a physical notepad into a digital workspace.
+AgencySync is a fullstack project and task management platform built for creative agencies. It combines a tactile notepad-style UX with robust team collaboration features, covering projects, tasks, leads, resources, finance, and team management.
 
 ---
 
 ## 🏗️ Architecture & Project Structure
 
-The codebase is organized into **`frontend/`** and **`backend/`**:
-
 ```
-stitch_agency_task_flow/
-├── backend/                  # ⚙️ BACKEND (Node.js + Express + TypeScript)
+Agency-Task-Flow/
+├── backend/                        # ⚙️ Node.js + Express + TypeScript
 │   ├── src/
-│   │   ├── controllers/      # Route controllers (Auth, Tasks, Projects, Resources, System)
-│   │   ├── middlewares/      # JWT Auth & Error Handling
-│   │   ├── routes/v1/        # API v1 endpoints
-│   │   ├── db/               # JSON persistent DataStore & auto-seed
-│   │   ├── types/            # Data models & API contracts
-│   │   └── index.ts          # Express server entry (Port 5000)
-│   ├── data/                 # Auto-saved JSON database (db.json)
+│   │   ├── controllers/            # Route handlers (Auth, Tasks, Projects, Resources, Finance, Leads, Team)
+│   │   ├── middlewares/            # JWT auth & error handling
+│   │   ├── routes/v1/              # RESTful API endpoints (/api/v1/*)
+│   │   ├── db/                     # JSON persistent DataStore (lowdb-style) + auto-seed
+│   │   ├── types/                  # Shared TypeScript interfaces & API contracts
+│   │   └── index.ts                # Express server entry — Port 5000
+│   ├── data/                       # Auto-saved JSON database (db.json)
 │   ├── package.json
 │   └── tsconfig.json
 │
-├── frontend/                 # 🎨 FRONTEND (React 18 + TypeScript + Vite + Tailwind)
+├── frontend/                       # 🎨 React 18 + TypeScript + Vite + Tailwind CSS
 │   ├── src/
-│   │   ├── components/       # UI components (Layout, Tasks, Drawer, Modals)
-│   │   ├── contexts/         # Auth, Theme (Light/Dark/Sepia), & Sync contexts
-│   │   ├── pages/            # 8 complete application screens
-│   │   ├── services/         # Typed API client connected to /api/v1/
-│   │   ├── styles/           # Notepad Minimal CSS & Hairlines
-│   │   ├── types/            # TypeScript interfaces
-│   │   ├── App.tsx           # Client router
-│   │   └── main.tsx          # Client entry point (Port 5173)
-│   ├── tailwind.config.js    # Notepad Minimal design tokens
-│   ├── vite.config.ts        # Vite proxy configuration
+│   │   ├── components/             # Reusable UI (Layout, Tasks, Projects, Finance, Leads, Admin, Editor)
+│   │   ├── contexts/               # Auth, Theme (Light/Dark/Sepia), Sync contexts
+│   │   ├── pages/                  # Application screens (see list below)
+│   │   ├── services/               # Typed API client → /api/v1/
+│   │   ├── utils/                  # storageManager, helpers
+│   │   ├── types/                  # TypeScript interfaces
+│   │   ├── App.tsx                 # Client-side router
+│   │   └── main.tsx                # Entry point — Port 5173
+│   ├── tailwind.config.js          # Design tokens
+│   ├── vite.config.ts              # Vite proxy → backend
 │   └── package.json
 │
-├── agencysync_notepad/       # 📐 Design System Specs (DESIGN.md)
-├── package.json              # 🚀 Root unified task runner (concurrently)
+├── stitch reference/               # 📐 Original screen references & design specs
+├── DESIGN.md                       # Design system documentation
+├── package.json                    # Root task runner (concurrently)
 └── README.md
 ```
 
@@ -46,39 +45,37 @@ stitch_agency_task_flow/
 ## ⚡ Quick Start
 
 ### 1. Install All Dependencies
-From the root directory, run:
 ```bash
 npm run install:all
 ```
 
-### 2. Start Both Backend & Frontend Simultaneously
+### 2. Start Both Backend & Frontend
 ```bash
 npm run dev
 ```
-- **Frontend URL:** [http://localhost:5173](http://localhost:5173)
-- **Backend API URL:** [http://localhost:5000/api/v1](http://localhost:5000/api/v1)
+
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:5000/api/v1 |
 
 ---
 
 ## 📱 Application Screens & Features
 
-1. **Teammate Selector & Authentication (`/login`)**
-   - Click teammate avatar (Mahim, Touhidul, Alex) with password/PIN drawer.
-   - Add new teammates with customized roles.
-2. **Today's Focus (`/tasks`)**
-   - Live date header, handwritten task checklist, 3px priority ink strokes (High/Normal/Low), strike-through animations.
-   - Floating action button (`+`) opening task creation bottom sheet.
-3. **Team Board (`/team`)**
-   - Filter by teammate or project category, grouped into To Do & Done status columns.
-4. **Projects Hub (`/projects` & `/projects/:id`)**
-   - Live completion progress meters, attached resources (Figma, Google Docs), and task checklist.
-5. **Project Resources Explorer (`/resources`)**
-   - File explorer with badges (PDF, JPG, DOCX, ZIP) and quick link cards.
-6. **Profile Drawer & Options (`/profile`)**
-   - Slide-in navigation drawer, avatar editor, role updater, and privacy preferences.
-7. **Settings & Diagnostics (`/settings`)**
-   - Real-time **Light**, **Dark**, and **Sepia** theme switcher.
-   - Database capacity meter, force sync, and database reset triggers.
+| # | Route | Feature |
+|---|---|---|
+| 1 | `/login` | **Auth** — Teammate selector with PIN/password drawer; add new teammates with custom roles |
+| 2 | `/tasks` | **Today's Focus** — Live date header, handwritten task checklist, priority ink strokes (High/Normal/Low), strike-through animations |
+| 3 | `/team` | **Team Board** — Filter by teammate or project, grouped To Do / Done columns |
+| 4 | `/projects` | **Projects Hub** — Completion meters, resource links, task checklists |
+| 5 | `/projects/:id` | **Project Detail** — Deliverables, resources, team members, settings |
+| 6 | `/resources` | **Resource Explorer** — File browser with badges (PDF, DOCX, Figma, etc.) |
+| 7 | `/leads` | **Lead Pipeline** — CRM-style lead tracking with status flow |
+| 8 | `/finance` | **Finance Tracker** — Income/expense ledger with project allocation |
+| 9 | `/admin` | **Admin Panel** — Team management, roles, permissions |
+| 10 | `/profile` | **Profile & Options** — Avatar editor, role updater, privacy preferences |
+| 11 | `/settings` | **Settings & Diagnostics** — Theme switcher (Light/Dark/Sepia), DB capacity meter, force sync, DB reset |
 
 ---
 
@@ -86,8 +83,54 @@ npm run dev
 
 | Command | Action |
 |---|---|
-| `npm run dev` | Runs both backend & frontend concurrently with live reload |
-| `npm run dev:backend` | Runs backend only on port 5000 |
-| `npm run dev:frontend` | Runs frontend only on port 5173 |
-| `npm run build` | Builds both backend and frontend for production |
-| `npm run type-check` | Runs TypeScript type checking across both projects |
+| `npm run dev` | Runs backend + frontend concurrently with live reload |
+| `npm run dev:backend` | Backend only — Port 5000 |
+| `npm run dev:frontend` | Frontend only — Port 5173 |
+| `npm run build` | Production build for both backend and frontend |
+| `npm run type-check` | TypeScript type checking across both projects |
+| `npm run install:all` | Installs dependencies in root, backend, and frontend |
+
+---
+
+## ✅ Recently Completed
+
+### Sprint — Sept 20–21, 2026
+- **Lead Management** — Full CRM pipeline with lead creation, status tracking, and detail modal
+- **Finance Module** — Income/expense entries with project allocation and ledger view
+- **Project Deliverables** — Milestone-based deliverable tracking with completion states
+- **Resource Preview** — Modal viewer for attached files and links
+- **Project Settings** — Edit project metadata, status, and team assignments
+- **Admin Panel** — Team member management with role-based permissions
+- **Storage Manager** — Database capacity monitoring and management modal
+- **Team Member System** — Add, edit, remove teammates with avatar and role configuration
+- **MongoDB Resource Monitoring** — Backend health diagnostics with DB connection stats
+- **Rich Text Editor** — TipTap-powered description editor on project details
+
+---
+
+## 🔜 Next Up
+
+### Global Search
+- Unified search overlay (keyboard shortcut: `Cmd/Ctrl + K`)
+- Searches across: **Tasks**, **Projects**, **Leads**, **Team Members**, **Resources**
+- Live fuzzy-match results with category grouping
+- Recent searches / quick actions
+
+### Notification System
+- In-app notification center (bell icon in top bar)
+- Event-driven alerts: task assignments, project updates, lead status changes, deadline reminders
+- Read/unread state management with badge counters
+- Notification preferences per user (opt-in/out per category)
+
+---
+
+## 🔧 Tech Stack
+
+| Layer | Tech |
+|---|---|
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS |
+| Backend | Node.js, Express, TypeScript |
+| Database | JSON flat-file store (lowdb-style), with MongoDB diagnostics |
+| Auth | JWT (access tokens), bcrypt password hashing |
+| Rich Text | TipTap + ProseMirror |
+| Deployment | Local dev (concurrent) |

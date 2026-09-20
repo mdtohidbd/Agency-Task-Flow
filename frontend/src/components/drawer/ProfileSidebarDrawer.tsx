@@ -11,6 +11,17 @@ export const ProfileSidebarDrawer: React.FC<ProfileSidebarDrawerProps> = ({ isOp
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
 
+  // Close on Escape
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleNavigate = (path: string) => {
@@ -68,6 +79,43 @@ export const ProfileSidebarDrawer: React.FC<ProfileSidebarDrawerProps> = ({ isOp
             </li>
             <li>
               <button
+                onClick={() => handleNavigate('/finance')}
+                className="w-full flex items-center gap-md px-margin-mobile py-md hover:bg-surface-variant transition-colors text-on-surface text-left border-b border-outline/30"
+              >
+                <span className="material-symbols-outlined text-secondary">account_balance_wallet</span>
+                <span className="font-body-lg text-body-lg flex-1">Company Finance</span>
+                <span className="material-symbols-outlined text-secondary text-[18px]">chevron_right</span>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => handleNavigate('/resources')}
+                className="w-full flex items-center gap-md px-margin-mobile py-md hover:bg-surface-variant transition-colors text-on-surface text-left border-b border-outline/30"
+              >
+                <span className="material-symbols-outlined text-secondary">folder_open</span>
+                <span className="font-body-lg text-body-lg flex-1">Project Resources</span>
+                <span className="material-symbols-outlined text-secondary text-[18px]">chevron_right</span>
+              </button>
+            </li>
+            {(currentUser?.id === 'user-mahim' || 
+              currentUser?.id === 'user-touhidul' || 
+              currentUser?.name?.toLowerCase().includes('mahim') || 
+              currentUser?.name?.toLowerCase().includes('tohid') ||
+              currentUser?.name?.toLowerCase().includes('touhid') ||
+              currentUser?.role?.toLowerCase().includes('admin')) && (
+              <li>
+                <button
+                  onClick={() => handleNavigate('/admin')}
+                  className="w-full flex items-center gap-md px-margin-mobile py-md hover:bg-surface-variant transition-colors text-primary text-left border-b border-outline/30"
+                >
+                  <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>admin_panel_settings</span>
+                  <span className="font-body-lg text-body-lg flex-1 font-medium">Admin Panel</span>
+                  <span className="material-symbols-outlined text-primary text-[18px]">chevron_right</span>
+                </button>
+              </li>
+            )}
+            <li>
+              <button
                 onClick={() => handleNavigate('/profile')}
                 className="w-full flex items-center gap-md px-margin-mobile py-md hover:bg-surface-variant transition-colors text-on-surface text-left"
               >
@@ -86,27 +134,17 @@ export const ProfileSidebarDrawer: React.FC<ProfileSidebarDrawerProps> = ({ isOp
                 <span className="material-symbols-outlined text-secondary text-[18px]">chevron_right</span>
               </button>
             </li>
-            <li>
-              <button
-                onClick={() => handleNavigate('/resources')}
-                className="w-full flex items-center gap-md px-margin-mobile py-md hover:bg-surface-variant transition-colors text-on-surface text-left"
-              >
-                <span className="material-symbols-outlined text-secondary">folder_open</span>
-                <span className="font-body-lg text-body-lg flex-1">Project Resources</span>
-                <span className="material-symbols-outlined text-secondary text-[18px]">chevron_right</span>
-              </button>
-            </li>
           </ul>
         </nav>
 
-        {/* Bottom Section: Logout / Switch Teammate */}
+        {/* Bottom Section: Logout */}
         <div className="p-margin-mobile border-t border-outline flex flex-col gap-sm">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-sm py-2.5 text-primary font-body-lg text-body-lg rounded-full border border-outline hover:bg-ink-blue-container transition-colors"
+            className="w-full flex items-center justify-center gap-sm py-2.5 text-secondary hover:text-error font-body-lg text-body-lg rounded-full border border-outline hover:border-error/30 hover:bg-error/5 transition-colors cursor-pointer"
           >
             <span className="material-symbols-outlined text-[20px]">logout</span>
-            Switch Teammate
+            Logout
           </button>
         </div>
       </aside>

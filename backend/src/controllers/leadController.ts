@@ -9,11 +9,15 @@ const leadSchema = z.object({
   phone: z.string().optional(),
   company: z.string().optional(),
   source: z.string().optional(),
-  status: z.enum(['new', 'contacted', 'qualified', 'won', 'lost']).optional(),
+  status: z.enum(['new', 'contacted', 'proposal', 'qualified', 'won', 'lost']).optional(),
   value: z.number().optional(),
+  currency: z.enum(['USD', 'BDT']).optional(),
+  projectType: z.string().optional(),
   websiteType: z.string().optional(),
   expectedTimeline: z.string().optional(),
   requirements: z.string().optional(),
+  nextFollowUpDate: z.string().optional(),
+  followUps: z.array(z.any()).optional(),
   notes: z.array(z.any()).optional()
 });
 

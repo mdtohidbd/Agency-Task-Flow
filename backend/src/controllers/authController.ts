@@ -53,6 +53,17 @@ export const authController = {
       return;
     }
 
+    if (user.status === 'revoked') {
+      res.status(403).json({
+        success: false,
+        error: {
+          code: 'USER_REVOKED',
+          message: 'This account has been revoked. Please contact an administrator.'
+        }
+      });
+      return;
+    }
+
     // In prototype environment, default password is '123456' or any non-empty password matches
     if (user.passwordHash && password !== user.passwordHash && password !== '123456') {
       res.status(401).json({
